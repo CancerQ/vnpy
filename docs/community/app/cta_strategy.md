@@ -14,7 +14,7 @@ CtaStrategy是用于**CTA自动交易**的功能模块，用户可以通过其UI
 
 在启动脚本中添加如下代码：
 
-```python 3
+```python3
 # 写在顶部
 from vnpy_ctastrategy import CtaStrategyApp
 
@@ -382,7 +382,7 @@ CTA策略模板提供了信号生成和委托管理功能，用户可以基于�
 
 在基于CTA策略模板编写策略逻辑之前，需要在策略文件的顶部载入需要用到的内部组件，如下方代码所示：
 
-```python 3
+```python3
 from vnpy_ctastrategy import (
     CtaTemplate,
     StopOrder,
@@ -401,7 +401,7 @@ from vnpy_ctastrategy import (
 
 在策略类的下方，可以设置策略的作者（author），参数（parameters）以及变量（variables），如下方代码所示：
 
-```python 3
+```python3
 
     author = "用Python的交易员"
 
@@ -459,7 +459,7 @@ __init__函数是策略类的构造函数，需要与继承的CtaTemplate保持�
 
 在这个继承的策略类里，初始化一般分三步，如下方代码所示：
 
-```python 3
+```python3
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
@@ -474,7 +474,7 @@ __init__函数是策略类的构造函数，需要与继承的CtaTemplate保持�
 
 如果只基于on_bar进行交易，这里代码可以写成：
 
-```python 3
+```python3
         self.bg = BarGenerator(self.on_bar)
 ```
 
@@ -486,13 +486,13 @@ BarGenerator默认的基于on_bar函数合成长周期K线的数据频率是分�
 
 文件顶部导入Interval：
 
-```python 3
+```python3
 from vnpy.trader.constant import Interval
 ```
 
 __init__函数创建bg实例时传入数据频率：
 
-```python 3
+```python3
         self.bg = BarGenerator(self.on_bar, 2, self.on_2hour_bar, Interval.HOUR)
 ```
 
@@ -519,7 +519,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 初始化策略时on_init函数会被调用，默认写法是先调用write_log函数输出“策略初始化”日志，再调用load_bar函数加载历史数据，如下方代码所示：
 
-```python 3
+```python3
     def on_init(self):
         """
         Callback when strategy is inited.
@@ -540,7 +540,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 启动策略时on_start函数会被调用，默认写法是调用write_log函数输出“策略启动”日志，如下方代码所示：
 
-```python 3
+```python3
     def on_start(self):
         """
         Callback when strategy is started.
@@ -558,7 +558,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 停止策略时on_stop函数会被调用，默认写法是调用write_log函数输出“策略停止”日志，如下方代码所示：
 
-```python 3
+```python3
     def on_stop(self):
         """
         Callback when strategy is stopped.
@@ -580,7 +580,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 当策略收到最新的Tick数据的行情推送时，on_tick函数会被调用。默认写法是通过BarGenerator的update_tick函数把收到的Tick数据推进前面创建的bg实例中以便合成1分钟的K线，如下方代码所示：
 
-```python 3
+```python3
     def on_tick(self, tick: TickData):
         """
         Callback of new tick data update.
@@ -600,7 +600,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 2 . 如果策略需要基于on_bar推进来的K线数据通过BarGenerator合成更长时间周期的K线来交易，那么请在on_bar中调用BarGenerator的update_bar函数，把收到的这个bar推进前面创建的bg实例中即可，如下方代码所示：
 
-```python 3
+```python3
     def on_bar(self, bar: BarData):
         """
         Callback of new bar data update.
@@ -610,7 +610,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 示例策略类BollChannelStrategy是通过15分钟K线数据回报来生成CTA信号的。一共有三部分，如下方代码所示：
 
-```python 3
+```python3
     def on_15min_bar(self, bar: BarData):
         """"""
         self.cancel_all()
@@ -664,7 +664,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 **on_trade**
 
-* 入参：bar: TradeData
+* 入参：trade: TradeData
 
 * 出参：无
 
@@ -672,7 +672,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 **on_order**
 
-* 入参：bar: OrderData
+* 入参：order: OrderData
 
 * 出参：无
 
@@ -680,7 +680,7 @@ CtaTemplate中以on开头的函数称为回调函数，在编写策略的过程�
 
 **on_stop_order**
 
-* 入参：bar: StopOrder
+* 入参：stop_order: StopOrder
 
 * 出参：无
 
@@ -706,13 +706,13 @@ buy/sell/short/cover都是策略内部的负责发单的交易请求类函数。
 
 如果stop设置为True，那么该笔订单则会自动转成停止单，如果接口支持交易所停止单则会转成交易所停止单，如果接口不支持交易所停止单则会转换成VeighNa的本地停止单。
 
-如果lock设置为True，那么该笔订单则会进行锁仓委托转换（在有今仓的情况下，如果想平仓，则会先平掉所有的昨仓，然后剩下的部分都进行反向开仓来代替平今仓，以避免平今的手续费惩罚）。
+如果lock设置为True，那么该笔订单则会进行锁仓委托转换（在有今仓的情况下，且交易的交易所不是指定平今平昨的交易所，会直接反向开仓。在有昨仓的情况下，如果想平仓，则会先平掉所有的昨仓，然后剩下的部分都进行反向开仓来代替平今仓，以避免平今的手续费惩罚）。
 
 如果net设置为True，那么该笔订单则会进行净仓委托转换（基于整体账户的所有仓位，根据净仓持有方式来对策略下单的开平方向进行转换）。但是净仓交易模式与锁仓交易模式互斥，因此net设置为True时，lock必须设置为False。
 
 请注意，如果向上期所发出平仓委托，因为该交易所必须指定平今、平昨，底层会对其平仓指令自动进行转换。因为上期所部分品种有平今优惠，所以默认是以平今优先的方式发出委托的（如果交易的标的在上期所平昨更优惠的话，可以自行在vnpy.trader.converter的convert_order_request_shfe函数中做适当的修改）。
 
-```python 3
+```python3
     def buy(self, price: float, volume: float, stop: bool = False, lock: bool = False, net: bool = False):
         """
         Send buy order to open a long position.
@@ -788,9 +788,9 @@ cancel_order和cancel_all都是负责撤单的交易请求类函数。cancel_ord
 
 在策略中调用load_bar函数，可以在策略初始化时加载K线数据。
 
-如下方代码所示，调用load_bar函数时，默认加载的天数是10，频率是一分钟，对应也就是加载10天的1分钟K线数据。在回测时，10天指的是10个交易日，而在实盘时，10天则是指的是自然日，因此建议加载的天数宁可多一些也不要太少。use_database参数默认为False，会先依次尝试通过交易接口、数据服务、数据库获取历史数据，直到获取历史数据或返回空。当use_database设置为True后，会跳过通过交易接口和数据服务获取历史数据，直接去数据库查询。
+如下方代码所示，调用load_bar函数时，默认加载的天数是10，频率是一分钟，对应也就是加载10天的1分钟K线数据。10天指的是10个自然日，建议加载的天数宁可多一些也不要太少。use_database参数默认为False，会先依次尝试通过交易接口、数据服务、数据库获取历史数据，直到获取历史数据或返回空。当use_database设置为True后，会跳过通过交易接口和数据服务获取历史数据，直接去数据库查询。
 
-```python 3
+```python3
     def load_bar(
         self,
         days: int,
